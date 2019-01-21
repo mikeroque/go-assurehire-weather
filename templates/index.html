@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>AssureWeather</title>
+	
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+	
+	<style>
+		body {
+			text-align: center;
+		}
+		
+		.btn-primary {
+			background-color: #715da9;
+			border-color: #65529a;
+		}
+		
+		.btn-primary:hover, .btn-primary:active {
+			background-color: #5a498a !important;
+			border-color: #4b3d73 !important;
+		}
+		
+		.preformatted {
+			font-family: monospace;
+			white-space: pre;
+			text-align: left;
+		}
+		
+		section, .section {
+			margin-bottom: 2em;
+		}
+		
+		section:last-of-type {
+			margin-bottom: inital;
+		}
+		
+		.day-of-week {
+			font-size: 1.5em;
+			font-weight: bold;
+		}
+		
+		.extended-forecast-day {
+			margin-bottom: 1em;
+		}
+		
+		.current-temp {
+			font-size: 3em;
+			font-weight: bold;
+		}
+		
+		.high-temp {
+			font-weight: bold;
+		}
+	</style>
+</head>
+<body>
+	<section>
+		<h1>AssureWeather</h1>		
+		<form action="" method="POST">
+			<div class="form-group row justify-content-center">
+				<label for="address" class="col-sm-1 col-form-label">Address</label>
+				<div class="col-sm-5">
+					<input type="text" name="address" value="" class="form-control">
+				</div>
+			</div>
+			<div class="form-group row justify-content-center">
+				<label for="city" class="col-sm-1 col-form-label">City</label>
+				<div class="col-sm-5">
+					<input type="text" name="city" value="" class="form-control">
+				</div>
+			</div>
+			<div class="form-group row justify-content-center">
+				<label for="state" class="col-sm-1 col-form-label">State</label>
+				<div class="col-sm-5">
+					<input type="text" name="state" value="" class="form-control">
+				</div>
+			</div>
+			<div class="form-group row justify-content-center">
+				<label for="zip" class="col-sm-1 col-form-label">Zip</label>
+				<div class="col-sm-5">
+					<input type="text" name="zip" value="" maxlength="5" required class="form-control">
+				</div>
+			</div>
+			<div>
+				<label for="submit"></label>
+				<input type="submit" name="submit" value="Get weather" class="btn btn-primary">
+			</div>
+		</form>
+		
+		{{ if .Errors }}
+		<div class="errors">
+			<h2>Oops!</h2>
+			{{ range $key, $error := .Errors }}
+			<div class="alert alert-danger" role="alert">{{ $error }}</div>
+			{{ end }}
+		</div>
+		{{ end }}
+	</section>
+	
+	{{ if .WeatherReport.Valid }}
+	<section>
+		<div class="section">
+			<h2>Current Conditions</h2>
+			<div class="current-temp">{{ (index .WeatherReport.Data.Current_condition 0).Temp_F }}°</div>
+			<div><img src="{{ (index (index .WeatherReport.Data.Current_condition 0).WeatherIconUrl 0).Value }}"/></div>
+			<div>{{ (index (index .WeatherReport.Data.Current_condition 0).WeatherDesc 0).Value }}</div>
+			<div><span class="high-temp">{{ (index .WeatherReport.Data.Weather 0).MaxtempF }}°</span>
+			<span class=".low-temp">{{ (index .WeatherReport.Data.Weather 0).MintempF }}°</div>
+			<div>{{ if .WeatherReport.Cached }}(Cached){{ else }}-{{ end }}</div>
+		</div>
+		
+		<div class="container extended-forecast">
+			<h2>Extended Forecast</h2>
+			<div class="row justify-content-center">
+				{{ range $key, $value := .WeatherReport.Data.Weather }}
+				{{ if lt $key 10 }}
+				<div class="extended-forecast-day col-4 col-md-4 col-lg-3 col-xl-1">
+					<div><span class="day-of-week">{{ $value.Date }}</span></div>
+					<div><span class="high-temp">{{ $value.MaxtempF }}°</span> <span class=".low-temp"> {{ $value.MintempF }}°</span></div>
+				</div>
+				{{ end }}
+				{{ end }}
+				</div>
+			</div>
+		</div>
+	</section>
+	{{ end }}
+	
+	{{ if false }}
+	<section>
+		<h2>Debug</h2>
+		<div class="preformatted">{{ .Debug }}</div>
+	</section>
+	{{ end }}
+
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+	</body>
+</html>
